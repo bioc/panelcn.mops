@@ -54,7 +54,7 @@
 #' memory. Default = TRUE.
 #' @return an instance of "CNVDetectionResult".
 #' @importFrom cn.mops normalizeChromosomes
-#' @importFrom GenomeInfoDb sortSeqlevels
+#' @importFrom Seqinfo sortSeqlevels
 #' @importFrom methods new
 #' @importFrom graphics boxplot
 #' @examples
@@ -95,7 +95,7 @@ panelcn.mops <- function(input, testi = 1, geneInd=NULL,
 
         irAllRegions <- IRanges(start,end)
         grAllRegions <- GRanges(chr,irAllRegions,seqinfo=seqinfo(input))
-        grAllRegions <- GenomeInfoDb::sortSeqlevels(grAllRegions)
+        grAllRegions <- Seqinfo::sortSeqlevels(grAllRegions)
         names(irAllRegions) <- NULL
     } else if (is.matrix(input)){
         if (nrow(input)> 1){
@@ -457,7 +457,7 @@ panelcn.mops <- function(input, testi = 1, geneInd=NULL,
         cnvrR <- reduce(GRanges(seqnames=segDfSubset$chr,
                                 IRanges(segDfSubset$start,segDfSubset$end),
                                 seqinfo=seqinfo(grAllRegions)))
-        cnvrR <- GenomeInfoDb::sortSeqlevels(cnvrR)
+        cnvrR <- Seqinfo::sortSeqlevels(cnvrR)
 
         cnvrCN <- matrix(NA, ncol=nSamples, nrow=length(cnvrR))
 
@@ -492,11 +492,11 @@ panelcn.mops <- function(input, testi = 1, geneInd=NULL,
                         seqinfo=seqinfo(grAllRegions), "sampleName"=sampleNames,
                         "median"=segDfSubset$median,"mean"=segDfSubset$mean,
                         "CN"=segDfSubset$CN)
-        rd <- GenomeInfoDb::sortSeqlevels(rd)
+        rd <- Seqinfo::sortSeqlevels(rd)
 
         cnvr <- GRanges(seqnames=seqnames(cnvrR), irCNVR,
                         seqinfo=seqinfo(grAllRegions))
-        cnvr <- GenomeInfoDb::sortSeqlevels(cnvr)
+        cnvr <- Seqinfo::sortSeqlevels(cnvr)
         values(cnvr) <- cnvrCN
 
         if (norm==2){
@@ -526,7 +526,7 @@ panelcn.mops <- function(input, testi = 1, geneInd=NULL,
                                         "sampleName"=segDf$sample,
                                         "median"=segDf$median,
                                         "mean"=segDf$mean,"CN"=segDf$CN)
-            r@segmentation <- GenomeInfoDb::sortSeqlevels(r@segmentation)
+            r@segmentation <- Seqinfo::sortSeqlevels(r@segmentation)
 
         } else if (inputType=="DataMatrix"){
             r@segmentation <- GRanges(seqnames=segDf$chr,
@@ -535,7 +535,7 @@ panelcn.mops <- function(input, testi = 1, geneInd=NULL,
                                         "sampleName"=segDf$sample,
                                         "median"=segDf$median,
                                         "mean"=segDf$mean,"CN"=segDf$CN)
-            r@segmentation <- GenomeInfoDb::sortSeqlevels(r@segmentation)
+            r@segmentation <- Seqinfo::sortSeqlevels(r@segmentation)
         }
 
         params <- append(params, list(badROI))

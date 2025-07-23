@@ -126,7 +126,7 @@ countBamListInGRanges <- function(bam.files, countWindows, read.width = 150,
                                 stranded.start = FALSE,
                                 get.width = FALSE, remove.dup = FALSE) {
     rds.counts <- integer(length(granges))
-    seq.names <- unique(as.character(GenomicRanges::seqnames(granges)))
+    seq.names <- unique(as.character(Seqinfo::seqnames(granges)))
     seq.names.in.bam <- names(Rsamtools::scanBamHeader(bam.file)[[1]]$targets)
 
     if ((sum(grepl(pattern = '^chr', seq.names)) > 0) &&
@@ -134,22 +134,22 @@ countBamListInGRanges <- function(bam.files, countWindows, read.width = 150,
         warning('countWindows contain chr prefix to the chromosome name but
                 BAM does not -> removing chr.')
         seq.names <- substr(seq.names, 4, nchar(seq.names))
-        GenomeInfoDb::seqlevels(granges) <- 
-            substr(GenomeInfoDb::seqlevels(granges), 4, 
-                    nchar(GenomeInfoDb::seqlevels(granges)))
+        Seqinfo::seqlevels(granges) <- 
+            substr(Seqinfo::seqlevels(granges), 4, 
+                    nchar(Seqinfo::seqlevels(granges)))
     } else if ((sum(grepl(pattern = '^chr', seq.names.in.bam)) > 0) &&
         (sum(grepl(pattern = '^chr', seq.names)) == 0)) {
         warning('BAM contains chr prefix to the chromosome name but
                 countWindows do not -> adding chr.')
         seq.names <- paste0("chr", seq.names)
-        GenomeInfoDb::seqlevels(granges) <- 
-            paste0("chr", GenomeInfoDb::seqlevels(granges))
+        Seqinfo::seqlevels(granges) <- 
+            paste0("chr", Seqinfo::seqlevels(granges))
     }
 
     for (seq.name in seq.names) {
         if (seq.name %in% seq.names.in.bam) {
             granges.subset <-
-                granges[GenomicRanges::seqnames(granges) == seq.name]
+                granges[Seqinfo::seqnames(granges) == seq.name]
             strand(granges.subset) <- "*"
             scan.what <- c("pos", "mapq")
             if (stranded.start | get.width) {
@@ -207,16 +207,16 @@ countBamListInGRanges <- function(bam.files, countWindows, read.width = 150,
                 }
                 rds.counts.seq.name <-
                     GenomicRanges::countOverlaps(granges.subset, rds.ranges)
-                rds.counts[as.logical(GenomicRanges::seqnames(granges) ==
+                rds.counts[as.logical(Seqinfo::seqnames(granges) ==
                                             seq.name)] <- rds.counts.seq.name
             }
             else {
-                rds.counts[as.logical(GenomicRanges::seqnames(granges) ==
+                rds.counts[as.logical(Seqinfo::seqnames(granges) ==
                                             seq.name)] <- 0
             }
         }
         else {
-            rds.counts[as.logical(GenomicRanges::seqnames(granges) ==
+            rds.counts[as.logical(Seqinfo::seqnames(granges) ==
                                         seq.name)] <- 0
         }
     }
